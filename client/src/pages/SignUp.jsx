@@ -1,18 +1,19 @@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import {  RouteSignIn } from "@/helpers/RouteName";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from 'zod'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-
+import { getEvn } from '@/helpers/getEnv'
+import { showToast } from '@/helpers/showToast'
 
 const SignUp = () => {
 
-
+    const navigate = useNavigate()
     const formSchema = z.object({
         name: z.string().min(3, 'Name must be at least 3 character long.'),
         email: z.string().email(),
@@ -30,8 +31,23 @@ const SignUp = () => {
         },
     })
     
-        function onSubmit(values) {
-            console.log(values)
+        async function onSubmit(values) {
+            try {
+                const response = await fetch(`${getEvn('VITE_API_BASE_URL')}/auth/register`, {
+                    method: 'post',
+                    headers: { 'Content-type': 'application/json' },
+                    body: JSON.stringify(values)
+                })
+                const data = await response.json()
+                if (!response.ok) {
+                    return showToast('error', data.message)
+                }
+    
+                navigate(RouteSignIn)
+                showToast('success', data.message)
+            } catch (error) {
+                showToast('error', error.message)
+            }
         }
 
         
