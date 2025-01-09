@@ -77,7 +77,7 @@ const AppSidebar = () => {
             </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+     
     </Sidebar>
   )
 }
